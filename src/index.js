@@ -12,7 +12,7 @@ class App extends Component {
 
     this.state = { videos: [] };
 
-    YTSearch({key: API_KEY, term: 'surfboards'}, (videos) => {
+    YTSearch({key: API_KEY, term: 'roseastrology'}, (videos) => {
       console.log(videos);
       this.setState({ videos });  // same as { videos: videos }
     });
@@ -21,11 +21,11 @@ class App extends Component {
   render() {
     return (
           <div>
-              <SearchBar />
+              <YTPlayList playlist={this.state.playlist} >
               <VideoList videos={this.state.videos} />
           </div>
         );
   }
 }
 
-ReactDOM.render(<App />, document.querySelector('.container'));
+ReactDOM.render(<App />, document.querySelector('.VideoListContainer'));
