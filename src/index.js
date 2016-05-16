@@ -28,20 +28,20 @@ class App extends Component {
     YTSearch({key: API_KEY,
               channelId: 'UCghGuUjJUeuGkCYauHHwGCA',
               type:'playlist'}, (playlists) => {
-      console.log("after playlist call");
-      console.log(playlists);
-      this.setState({ playlists });  
+      //console.log("after playlist call");
+      //console.log(playlists);
+      this.setState({ playlists });
     });
   }
 
   render() {
     return (
           <div>
-          <h3>PlayList</h3>
-          <VideoPlayList playlists={this.state.playlists} />
-
           <h3>VideoList</h3>
           <VideoList videos={this.state.videos} />
+
+          <h3>PlayList</h3>
+          <VideoPlayList playlists={this.state.playlists} />
           </div>
         );
   }
