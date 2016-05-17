@@ -114,7 +114,7 @@ class App extends Component {
           <VideoList videos={this.getVideos()} />
 
           <h3>PlayList</h3>
-
+<VideoPlayList playlists={this.state.playlists} />
           </div>
         );
   }
