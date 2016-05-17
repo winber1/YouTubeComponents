@@ -11,51 +11,7 @@ class VideoList extends React.Component {
     super(props);
   }
 
-  myYTSearch (params, callback) {
-    axios.get(ROOT_URL, { params: params })
-      .then(function(response) {
-        if (callback) { callback(response.data.items); }
-      })
-      .catch(function(error) {
-        console.error(error);
-      });
-  }
-
-
-  getVideos(){
-    var vids = [];
-    var videoItems2 = {};
-
-    var params = {
-      part: 'snippet',
-      key: API_KEY,
-      channelId: YTchannelID,
-      maxResults:50,
-      type: 'video'
-    };
-
-    videoItems2 = this.myYTSearch(params, (response) => {
-      console.log('response',response);
-      videoItems2 = (this.props.videos).map((video) => {
-        return <VideoListItem key={video.etag} video={video} />
-      });
-      //this.setState({ videos });  // same as { videos: videos }
-    });
-
-
-    const videoItems = (this.props.videos).map((video) => {
-      return <VideoListItem key={video.etag} video={video} />
-    });
-    console.log('typeof videoItems',typeof (videoItems));
-
-console.log('videoItems',videoItems);
-console.log('videoItems2',videoItems2);
-
-    return videoItems;
-  }
-
-  getVideos2(){  // this works using state from index.js
-    const videos = this.props.videos;
+  getVideos(){  // this works using state from index.js
     const videoItems = (this.props.videos).map((video) => {
       return <VideoListItem key={video.etag} video={video} />
     });

@@ -2,7 +2,7 @@ import React from 'react';
 //import VideoListItem from './video_list_item';
 
 const VideoPlayList = (props) => {
-  //console.log('in videoPlayList');
+  console.log('in videoPlayList');
   const playlistItems = props.playlists.map((playlist) => {
     //return <VideoListItem key={video.etag} video={video} />
 
