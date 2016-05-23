@@ -4,6 +4,7 @@ const VideoListItem = ({video}) => {
   // ({video}) is same as const video = props.video;
   const imageUrl = video.snippet.thumbnails.default.url;
 
+
   return (
     <li className='list-group-item'>
       <div className='video-list media'>

@@ -7,7 +7,7 @@ import VideoDetail from './components/video_detail';
 import VideoPlayList from './components/video_playlist.js';
 import axios from 'axios';
 
-var ROOT_URL = 'https://www.googleapis.com/youtube/v3/search';
+var ROOT_URL = 'https://www.googleapis.com/youtube/v3/';
 const API_KEY = 'AIzaSyCpFFn5L-9JfU9-hOJpXPzCtWhE9AXhOAw';
 const YTchannelID = 'UCghGuUjJUeuGkCYauHHwGCA';  //roseastrology
 
@@ -16,7 +16,6 @@ class App extends Component {
     super(props);
 
     this.state = {  videos: [],
-                    playlists:[],
                     playListObjs: []  // {playlistTitle, {video}}
                   };
   }
@@ -35,7 +34,7 @@ class App extends Component {
       type: 'video'
     };
 
-    this.myYTSearch(params, (videos) => {
+    this.myYTSearch('search', params, (videos) => {
       //console.log('response',videos);
       this.setState({ videos: videos });
     });
@@ -44,6 +43,8 @@ class App extends Component {
   }
 
   getPlaylists(){
+    var playListObjs = [];
+    var count = 0;
     var params = {
       part: 'snippet',
       key: API_KEY,
@@ -52,49 +53,44 @@ class App extends Component {
       type: 'playlist'
     };
 
-    this.myYTSearch(params, (playlists) => {
+    this.myYTSearch('search', params, (playlists) => {
 
-      // this.setState({ playlists: playlists });
-      console.log('playlists count', playlists.length)
-      console.log('playlists', playlists)
+      //console.log('playlists count', playlists.length)
+      //console.log('playlists', playlists)
 
-      // get video sets for each playlist
-      var playListObjs = [];
-      var count = 0;
+      // get playlist title and video set for each playlistid
       playlists.forEach(
         (playlist, index) => {
-          console.log('gothere');
-          console.log('playlist.id', playlist.id.playlistID)
           var params = {
             part: 'snippet',
-            key: API_KEY,
-            playlistID: playlist.id,
             maxResults:50,
-            type: 'videos'
+            playlistId: playlist.id.playlistId,
+            key: API_KEY
           };
-          this.myYTSearch(params, (videos) => {
-            console.log('getting videos for playlist '+ index, videos);
+          this.myYTSearch('playlistItems', params, (videos) => {
+            //console.log('getting videos for playlist '+ index + ' title:'+playlist.snippet.title, videos);
             playListObjs.push({
-              name: playlist.snippet.title,
+              title: playlist.snippet.title,
+              etag: playlist.etag,
               videos: videos,
             });
             count++;
-            console.log('total playlists processed so far: ', count);
+            //console.log('total playlists processed so far: ', count);
             // check for last playlist
             if (count === 12) {
-              console.log('playListObjs', playListObjs);
+              //console.log('playListObjs', playListObjs);
               // run this once after we have all videos for all playlists
               this.setState({ playListObjs });
             }
           });
         }
       );
-      // return this.state.videos;
     });
   }
 
-  myYTSearch (params, callback) {
-    axios.get(ROOT_URL, { params: params })
+  myYTSearch (path, params, callback) {
+    var p = ROOT_URL + path;
+    axios.get(p, { params: params })
       .then(function(response) {
         if (callback) { callback(response.data.items); }
       })
@@ -110,7 +106,7 @@ class App extends Component {
             <VideoList videos={this.state.videos} />
 
             <h3>PlayList</h3>
-            <VideoPlayList playlists={this.state.playlistObjs} />
+            <VideoPlayList playlists={this.state.playListObjs} />
           </div>
         );
   }
