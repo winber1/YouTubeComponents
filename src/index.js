@@ -17,24 +17,13 @@ class App extends Component {
 
     this.state = {  videos: [],
                     playlists:[],
-                    playListObjs:[]
+                    playListObjs: []  // {playlistTitle, {video}}
                   };
+  }
 
-    this.getVideos();
-    this.getPlaylists();
-
-
-    // playList search
-    YTSearch({key: API_KEY,
-              channelId: 'UCghGuUjJUeuGkCYauHHwGCA',
-              type:'playlist'}, (playlists) => {
-      //console.log("after playlist call");
-      //console.log(playlists);
-
-      this.setState({ playlists });
-    });
-
-//    this.getVideos = this.getVideos.bind(this);
+  componentDidMount () {
+      this.getVideos();
+      this.getPlaylists();
   }
 
   getVideos(){
@@ -51,11 +40,10 @@ class App extends Component {
       this.setState({ videos: videos });
     });
 
-    return this.state.videos;
+    //return this.state.videos;
   }
 
   getPlaylists(){
-    // get playlists
     var params = {
       part: 'snippet',
       key: API_KEY,
@@ -65,36 +53,44 @@ class App extends Component {
     };
 
     this.myYTSearch(params, (playlists) => {
-      //console.log('response',videos);
-      this.setState({ playlists: playlists });
+
+      // this.setState({ playlists: playlists });
       console.log('playlists count', playlists.length)
       console.log('playlists', playlists)
-    });
-    //var fruits = ["Banana", "Orange", "Apple", "Mango"];
-    //fruits.push("Lemon");
 
-    // get video sets for each playlist
-    var playListObjs = [];
-    this.state.playlists.forEach(
-      (playlist) => {
-    console.log('gothere');
-        var params = {
-          part: 'snippet',
-          key: API_KEY,
-          playlistID: playlist.id,
-          maxResults:50,
-          type: 'videos'
-        };
-        this.myYTSearch(params, (videos) => {
-          //console.log('response',videos);
-          playListObjs.push(playlist.snippet.title, videos);
-          this.setState({ playListObjs });
-    console.log('playListObjs len', playListObjs.length);
-        });
-        console.log('playListObjs',playListObjs);
-      }
-    );
-    return this.state.videos;
+      // get video sets for each playlist
+      var playListObjs = [];
+      var count = 0;
+      playlists.forEach(
+        (playlist, index) => {
+          console.log('gothere');
+          console.log('playlist.id', playlist.id.playlistID)
+          var params = {
+            part: 'snippet',
+            key: API_KEY,
+            playlistID: playlist.id,
+            maxResults:50,
+            type: 'videos'
+          };
+          this.myYTSearch(params, (videos) => {
+            console.log('getting videos for playlist '+ index, videos);
+            playListObjs.push({
+              name: playlist.snippet.title,
+              videos: videos,
+            });
+            count++;
+            console.log('total playlists processed so far: ', count);
+            // check for last playlist
+            if (count === 12) {
+              console.log('playListObjs', playListObjs);
+              // run this once after we have all videos for all playlists
+              this.setState({ playListObjs });
+            }
+          });
+        }
+      );
+      // return this.state.videos;
+    });
   }
 
   myYTSearch (params, callback) {
@@ -110,11 +106,11 @@ class App extends Component {
   render() {
     return (
           <div>
-          <h3>VideoList</h3>
-          <VideoList videos={this.getVideos()} />
+            <h3>VideoList</h3>
+            <VideoList videos={this.state.videos} />
 
-          <h3>PlayList</h3>
-<VideoPlayList playlists={this.state.playlists} />
+            <h3>PlayList</h3>
+            <VideoPlayList playlists={this.state.playlistObjs} />
           </div>
         );
   }
